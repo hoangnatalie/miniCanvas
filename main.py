@@ -6,7 +6,7 @@ from fastapi.security import APIKeyHeader
 
 coursemanager = CourseManager()
 usermanager = UserManager()
-usermanager.create_a_user("John", "pwd", "studnet")
+usermanager.create_a_user("John", "pwd", "student")
 usermanager.create_a_user("Alice", "pwd", "teacher")
 usermanager.create_a_user("Jimmy", "pwd", "admin")
 
@@ -21,7 +21,7 @@ def create_a_course(coursecode: str,
                     semester: str, 
                     teacher_id_list: List[int]) -> int:
     ### an admin should create a course
-    teacher_list = usermanager.find_users(teacher_id_list)
+    teacher_list = [1]
     course_id = coursemanager.create_a_course(coursecode, semester, teacher_list)
     
     course = coursemanager.find_a_course(course_id)
@@ -31,12 +31,13 @@ def create_a_course(coursecode: str,
 
 @app.put("/courses/{courseid}/students")
 def import_students(courseid: int,
-                    student_id_list: List[int]) -> None:
+                    student_id_list: List[int]) -> dict:
     course = coursemanager.find_a_course(courseid)
+    
     student_list = usermanager.find_users(student_id_list)
     course.import_students(student_list)
     
     print(course.course_id)
     print(course.student_list)
     
-    return None
+    return {"message": "Students were imported successfully!"}
